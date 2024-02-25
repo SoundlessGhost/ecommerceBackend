@@ -23,6 +23,7 @@ const client = new MongoClient(uri, {
 const ItemCollection = client.db("SnakeEye").collection("ProductCollection");
 const blogsCollection = client.db("SnakeEye").collection("blogsCollection");
 const userCollection = client.db("SnakeEye").collection("userCollection");
+const commentCollection = client.db("SnakeEye").collection("commentCollection");
 
 async function run() {
   try {
@@ -59,10 +60,23 @@ async function run() {
       if (existingUser) {
         return existingUser;
       }
-
       const result = await userCollection.insertOne(user);
       res.send(result);
     });
+
+    // comment route
+
+    app.get("/comment", async (req, res) => {
+      const result = await commentCollection.find().toArray();
+      res.send(result);
+    });
+
+    app.post("/comment", async (req, res) => {
+      const comment = req.body;
+      const result = await commentCollection.insertOne(comment);
+      res.send(result);
+    });
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log(
